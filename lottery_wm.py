@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*- 
-import csv,sys,random, codecs # 匯入csv 跟 亂數模組random
+import csv,sys,random, codecs, re # 匯入csv 跟 亂數模組random
+# 加入re 因為wm的職號 要從()中抽取
 
 wm_result = sys.stdin.readlines() # 接收標準輸入 取得第一階段名單
 
@@ -9,9 +10,12 @@ wm_final = []
 
 for num in wm_result:
     no = str(num).strip("\r\n")   # 將兩階段的名單混合在一起  並接著加入陣列
-    wm_final.append(no)
+    no_re = re.findall(r"\([a-z0-9]\)", no)
+    wm_final.append(no_re)
+
+print(wm_final)
     
-wm_final_n = set(wm_final)        # 第二階段中如果有分數跟職號完全相同的，用set將之去除
+"""wm_final_n = set(wm_final)        # 第二階段中如果有分數跟職號完全相同的，用set將之去除
 
 wm_list = []
 
@@ -41,6 +45,6 @@ title = "得獎職號\r\n"   # 組出 抽獎結果的csv
 result_save.write(title)  
 
 for emp_no in getprize_list:
-    result_save.write(emp_no+"\r\n")   
+    result_save.write(emp_no+"\r\n")   """
 
         
