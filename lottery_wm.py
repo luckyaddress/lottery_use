@@ -1,4 +1,13 @@
 #-*- coding: utf-8 -*- 
+# 使用方式 開啟wm 上面擷取下來的csv表單，跟第一份抽出的序號表單，用pipe 執行此py 並且給予 要抽出的獎項數 跟
+# 要將抽獎結果 寫入的路徑跟檔名  兩個參數
+# 指令範例 cat test.csv 0322_google.csv | python lottery_google_form.py 3  ../../1235.csv
+# 試算表存檔範例為   
+# 職號  分數
+# 123   100
+# 124    95
+
+
 import csv,sys,random, codecs, re # 匯入csv 跟 亂數模組random
 # 加入re 因為wm的職號 要從()中抽取
 
@@ -6,45 +15,49 @@ wm_result = sys.stdin.readlines() # 接收標準輸入 取得第一階段名單
 
 del wm_result[0]
 
-wm_final = []
+wm_final = []   #  wm名單
+gl_final = []   #  gl名單
+all_final = []    #  wm + gl 的名單
 
 for num in wm_result:
     no = str(num).strip("\r\n")   # 將兩階段的名單混合在一起  並接著加入陣列
-    no_re = re.findall(r"\([a-z0-9]\)", no)
-    wm_final.append(no_re)
+    no_re = re.findall(r"[r|R]?[0-9]{6,7}", no)  # 使用正規表達式抽取職號
+    if no_re == []:
+        no_re = ["wm_gl"]      # 加入Google抽獎號碼時，職號與分數的標籤欄位，在regex後會變成[]，無法使用，轉成一區分值
+    all_final.append(no_re[0]) # 取得參加wm的人員且及格的名單 + Google表單中獎的人
 
-print(wm_final)
-    
-"""wm_final_n = set(wm_final)        # 第二階段中如果有分數跟職號完全相同的，用set將之去除
+for p in range(0,len(all_final),1):
+    if "wm_gl" in all_final[p]:
+        for x in range(0,p,1):
+            wm_final.append(all_final[x])
+        for y in range(p+1, len(all_final),1):
+            gl_final.append(all_final[y])
 
-wm_list = []
+# 列出兩個陣列相同的地方
 
-for wm_data in wm_final_n:
-    times = str(wm_final_n).count(wm_data.split(",")[0])   # 每個人在第二階段的職號也能出現一次
-    if times == 1 and len(wm_data.split(",")) == 2 :       # 只去取第二階段有來考試的人並且第一階段沒中獎的人
-        wm_list.append(wm_data.split(","))                 # (跟上方職號一次取交集) 即可去除掉第一階段中獎還來考試的
-    
+wm_set = set(wm_final)
+gl_set = set(gl_final)  
 
-wm_list_100 = []            # 接著處理過濾掉 沒有考100滿分的人
+wm_candidate = list(wm_set.difference(gl_set)) 
+# 利用 set的 difference()  可以從 s1挑出跟s2 重複的資料，並且刪除重複元素，回傳新的s1 並轉為List
+# 即為第二階段的抽獎候選名單
 
-for x in wm_list:
-    if x[1] == "100":
-        wm_list_100.append(x[0])  # 取得第一階段沒抽中 第二階段有來考 並只紀錄一次 考100的職號
+same_candidate = list(wm_set.intersection(gl_set))
+# 利用 set 的 intersection() 功能 可以列出 兩份名單中有重複的部份
 
-print(wm_list_100)
-
-getprize_list = random.sample(wm_list_100, int(sys.argv[1])) # 後面命令列參數為要抽幾個得獎者 
-# random.sample的用法 random.sample(樣本群，要抽的個數--接受命令列參數)
-
-print(getprize_list)  #列出得獎人職號
+print("第二階段候選抽獎名單" + str(wm_candidate))
+print("第一階段中獎重複參加者" + str(same_candidate))
 
 
-result_save = open(sys.argv[2],"w") # 將抽獎結果存在 命令列參數指定的檔案中
+if len(wm_candidate) > 0 and len(wm_candidate) >= int(sys.argv[1]) : # 抽獎候選人要大於0個 且要大於等於被抽出的個數
+    getprize_list = random.sample(wm_candidate, int(sys.argv[1])) # 後面命令列參數為要抽幾個得獎者 
+    # random.sample的用法 random.sample(樣本群，要抽的個數--接受命令列參數)
+    print(getprize_list)  #列出得獎人職號
+    result_save = open(sys.argv[2],"w") # 將抽獎結果存在 命令列參數指定的檔案中
+    title = "得獎職號\r\n"   # 組出 抽獎結果的csv
+    result_save.write(title)  
+    for emp_no in getprize_list:
+        result_save.write(emp_no+"\r\n") 
 
-title = "得獎職號\r\n"   # 組出 抽獎結果的csv
-result_save.write(title)  
-
-for emp_no in getprize_list:
-    result_save.write(emp_no+"\r\n")   """
-
-        
+else:
+    print("第二階段無候選人可供抽獎或欲抽出名額大於候選名額") 
