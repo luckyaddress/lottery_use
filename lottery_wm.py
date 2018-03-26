@@ -46,6 +46,7 @@ same_candidate = list(wm_set.intersection(gl_set))
 # 利用 set 的 intersection() 功能 可以列出 兩份名單中有重複的部份
 
 print("第二階段候選抽獎名單" + str(wm_candidate))
+print("第二階段候選名單共"+ str(len(wm_candidate)) + "位")
 print("第一階段中獎重複參加者" + str(same_candidate))
 
 
