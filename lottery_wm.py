@@ -49,8 +49,23 @@ print("第二階段候選抽獎名單" + str(wm_candidate))
 print("第二階段候選名單共"+ str(len(wm_candidate)) + "位")
 print("第一階段中獎重複參加者" + str(same_candidate))
 
-
+## 先抽出一個代表序號(index)，再對應到職號的版本 ##
 if len(wm_candidate) > 0 and len(wm_candidate) >= int(sys.argv[1]) : # 抽獎候選人要大於0個 且要大於等於被抽出的個數
+    prize_num = range(0,len(wm_candidate))  # 用陣列的index下去 抽獎，所以要從0開始，這樣第一個人才能被抽中
+    getprize_list = random.sample(prize_num, int(sys.argv[1]))
+    print(getprize_list)     #列出得獎代表序號，再對應到職號
+    result_save = open(sys.argv[2],"w") # 將抽獎結果存在 命令列參數指定的檔案中
+    title = "得獎職號\r\n"   # 組出 抽獎結果的csv
+    result_save.write(title)  
+    for n in getprize_list:  # 將抽中的得獎代表序號，對應到候選人名單的職號上
+        print("得獎職號 : " + wm_candidate[n])
+        result_save.write(wm_candidate[n]+"\r\n") 
+
+else:
+    print("第二階段無候選人可供抽獎或欲抽出名額大於候選名額")
+
+## 直接抽職號的版本 ##
+"""if len(wm_candidate) > 0 and len(wm_candidate) >= int(sys.argv[1]) : # 抽獎候選人要大於0個 且要大於等於被抽出的個數
     getprize_list = random.sample(wm_candidate, int(sys.argv[1])) # 後面命令列參數為要抽幾個得獎者 
     # random.sample的用法 random.sample(樣本群，要抽的個數--接受命令列參數)
     print(getprize_list)  #列出得獎人職號
@@ -61,4 +76,4 @@ if len(wm_candidate) > 0 and len(wm_candidate) >= int(sys.argv[1]) : # 抽獎候
         result_save.write(emp_no+"\r\n") 
 
 else:
-    print("第二階段無候選人可供抽獎或欲抽出名額大於候選名額") 
+    print("第二階段無候選人可供抽獎或欲抽出名額大於候選名額")""" 
