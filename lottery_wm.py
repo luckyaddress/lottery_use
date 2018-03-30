@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*- 
 # 使用方式 開啟wm 上面擷取下來的csv表單，跟第一份抽出的序號表單，用pipe 執行此py 並且給予 要抽出的獎項數 跟
-# 要將抽獎結果 寫入的路徑跟檔名  兩個參數
-# 指令範例 cat test.csv 0322_google.csv | python lottery_google_form.py 3  ../../1235.csv
+# 要將抽獎結果 寫入的路徑跟檔名  兩個參數 要先開啟第二階段待抽選的名單
+# 指令範例 cat wm_list.csv  0322_google.csv | python lottery_google_form.py 3  ../../1235.csv
 # 試算表存檔範例為   
 # 職號  分數
 # 123   100
